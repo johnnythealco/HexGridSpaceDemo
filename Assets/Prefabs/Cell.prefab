@@ -105,7 +105,7 @@ MonoBehaviour:
   unit: {fileID: 0}
   border: {fileID: 21214488}
   contents: 0
-  IsAccessible: 0
+  isAccessible: 0
   Cost: 0
 --- !u!212 &21214488
 SpriteRenderer:
@@ -164,7 +164,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 79b601c3d83345941aa466fe3329f6e3, type: 3}
-  m_Color: {r: 0, g: 0.4852941, b: 0.078503415, a: 0.138}
+  m_Color: {r: 0.10914921, g: 0.08564013, b: 0.4852941, a: 0.103}
   m_FlipX: 0
   m_FlipY: 0
 --- !u!1001 &100100000
@@ -184,7 +184,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Color.a
-      value: 0.138
+      value: 0.103
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Color.r
+      value: 0.10914921
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Color.g
+      value: 0.08564013
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Color.b
+      value: 0.4852941
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

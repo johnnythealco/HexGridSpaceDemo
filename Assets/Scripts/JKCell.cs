@@ -8,7 +8,7 @@ public class JKCell :  SpriteCell
 	public Unit unit;
 	public SpriteRenderer border;
 	public CellContents contents;
-	public bool IsAccessible;
+	public bool isAccessible;
 	public float Cost;
 
 

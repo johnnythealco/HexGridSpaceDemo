@@ -57,8 +57,8 @@ public class Unit : MonoBehaviour {
 
 	protected IEnumerator SmoothMovement (List<Vector3> waypoints)
 	{
-		// turnmanager.Moving = true; 
-		// animator.SetBool ("Walking", true);
+		 turnmanager.Moving = true; 
+//		 animator.SetBool ("Walking", true);
 		foreach (var waypoint in waypoints)
 		{
 			float sqrRemainingDistance = (transform.position - waypoint).sqrMagnitude; //sqrMagnitude is cheaper on the CPU than Magnitude
@@ -74,7 +74,7 @@ public class Unit : MonoBehaviour {
 			}
 		}
 		// animator.SetBool ("Walking", false);
-		// turnmanager.Moving = false;
+		 turnmanager.Moving = false;
 
 	}
 }

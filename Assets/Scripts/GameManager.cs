@@ -14,6 +14,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	public GameObject unitPrefab;
 	public GameObject enemyPrefab;
 	public TurnManager turn;
+
 	
 	
 	private IGrid<JKCell, FlatHexPoint> grid;
@@ -36,7 +37,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		{
 			grid [point].contents = CellContents.Empty;
 			grid [point].Cost = 1.0f;
-			grid [point].IsAccessible = true;
+			grid [point].isAccessible = true;
 		}
 	
 	
@@ -64,7 +65,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		grid [point].contents = CellContents.Player;
 
 		grid [point].unit = unit;
-		grid [point].IsAccessible = false;
+		grid [point].isAccessible = false;
 		unit.turnmanager = turn;
 	}
 
@@ -76,7 +77,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		grid [point].contents = CellContents.Enemy;
 
 		grid [point].unit = unit;
-		grid [point].IsAccessible = false;
+		grid [point].isAccessible = false;
 		unit.turnmanager = turn;
 
 	}
@@ -91,9 +92,18 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	
 	#region User Interaction
 
-	public void OnLeftClick (FlatHexPoint point)
+	public void LeftClickAction ()
 	{
+		var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+		RaycastHit hit;
+
+		if (Physics.Raycast(ray, out hit))
+		{
+			Vector3 worldPosition = this.transform.InverseTransformPoint(hit.point);
+
+
+		var point = Map[worldPosition]; 
 
 		if (turn.PlayersTurn)
 		{
@@ -128,15 +138,23 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 					EndAction ();
 					turn.PlayersTurn = false;
 				}
-////				else if (!somethingSelected)
-////				{
-////					grid [GetClosestPlayer (point)].Color = Color.red;
-////				
-////				}
 				break;
+			}
+		
 			}
 		}
 	}
+
+	public void Update()
+	{
+		if (Input.GetMouseButtonDown(0))
+		{
+
+			LeftClickAction ();
+
+		}
+	}
+
 
 	#endregion
 
@@ -144,16 +162,19 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	public void MoveUnitFromPointToPoint (FlatHexPoint start, FlatHexPoint end) 
 	{
-		grid [end].unit = grid[start].unit;														//register the unit at the new location
-		grid [end].IsAccessible = false;																	//Mark the JKCell as occupited
-		grid[end].contents = grid[start].contents;
+		if (grid [end].contents == CellContents.Empty && grid [end].isAccessible)
+		{
+			grid [start].unit.Move (GetWaypoints (start, end));
 
+			grid [end].contents = grid [start].contents;
+			grid [end].unit = grid [start].unit;														//register the unit at the new location
+			grid [end].isAccessible = false;																	//Mark the JKCell as occupited
 
-		grid [start].unit.Move (GetWaypoints (start, end));
-
-		grid[start].unit = null;																					//unregister the unit from their last location
-		grid[start].IsAccessible = true;																	//Make the now empty JKCell accessible
-		grid[start].contents = CellContents.Empty;
+			grid [start].unit = null;																					//unregister the unit from their last location
+			grid [start].isAccessible = true;																	//Make the now empty JKCell accessible
+			grid [start].Cost = 1;
+			grid [start].contents = CellContents.Empty;
+		}
 	}
 
 
@@ -245,7 +266,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 			var AvailableMoves = Algorithms.GetPointsInRangeCost<JKCell, FlatHexPoint>
 
 			(grid, point,
-				JKCell => JKCell.IsAccessible,
+				JKCell => JKCell.isAccessible,
 				(p, q) => (grid [p].Cost + grid [q].Cost / 2.0f),
 				grid [point].unit.movement
 			);
@@ -306,8 +327,16 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 			(p, q) =>  (grid [p].Cost + grid [q].Cost / 2) 
 		);
 
-		result = path.ToList ();
-//		result.Remove (start);
+
+
+		foreach(var step in path.ToList ())
+		{
+			if(grid[step].isAccessible)
+			{
+				result.Add (step);
+			}
+		}
+
 
 		return result;
 	}
@@ -320,7 +349,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		//Get a kvp of all available moves and the cost
 		var range =  Algorithms.GetPointsInRangeCost<JKCell, FlatHexPoint>
 													(grid, source,
-														JKCell => JKCell.IsAccessible,
+														JKCell => JKCell.isAccessible,
 														(p, q) => (grid [p].Cost + grid [q].Cost / 2.0f),
 														grid [source].unit.movement);
 
