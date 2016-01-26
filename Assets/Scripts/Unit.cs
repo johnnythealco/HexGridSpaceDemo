@@ -14,6 +14,7 @@ public class Unit : MonoBehaviour {
 	
 	private float inverseMoveTime;
 
+
 	protected virtual void Start ()
 	{
 		inverseMoveTime = 1 / moveTime;
@@ -46,12 +47,12 @@ public class Unit : MonoBehaviour {
 
 	public void Face(Vector3 position)
 	{
-		var lookPos = position - transform.position;
 
-		var rotation = Quaternion.LookRotation (lookPos);
-		transform.rotation = Quaternion.Slerp (transform.rotation, rotation, Time.deltaTime * rotateTime);
+		transform.LookAt (position, transform.up);
+	
 
 
+//
 	}
 
 
@@ -61,6 +62,7 @@ public class Unit : MonoBehaviour {
 //		 animator.SetBool ("Walking", true);
 		foreach (var waypoint in waypoints)
 		{
+			Face (waypoint);
 			float sqrRemainingDistance = (transform.position - waypoint).sqrMagnitude; //sqrMagnitude is cheaper on the CPU than Magnitude
 
 			while (sqrRemainingDistance > float.Epsilon) //Epsion is the smallest value that a float can have different from zero.

@@ -20,9 +20,9 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	private IGrid<JKCell, FlatHexPoint> grid;
 	public bool somethingSelected;
 	public Unit unitSelected;
+	public Dictionary<FlatHexPoint, float> validTargets;
 	private FlatHexPoint selectedPoint;
 	private Dictionary<FlatHexPoint, float> AvailableMoves;
-	public List<FlatHexPoint> validTargets;
 	private FlatHexPoint enemyPosition; 
 	
 	#endregion
@@ -30,9 +30,9 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		override public void InitGrid ()
 	{
 		somethingSelected = false;
+		validTargets = new  Dictionary<FlatHexPoint, float>(); 
 		grid = Grid.CastValues<JKCell, FlatHexPoint> ();
-		validTargets = new List<FlatHexPoint> ();
-		
+
 				foreach (var point in Grid)
 		{
 			grid [point].contents = CellContents.Empty;
@@ -114,9 +114,8 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 				{
 					SelectUnitAtPoint (point); 
 					AvailableMoves = GetAvailableMoves (point);
-					validTargets = GetValidTargets ();
 					HighlightMove (AvailableMoves.Keys);
-					HighlightTargets (validTargets);
+					HighlightTargets (GetValidTargets (selectedPoint).Keys.ToList()); 
 				}
 				break;
 
@@ -132,9 +131,10 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 				break;
 
 			case CellContents.Enemy:
-				if (somethingSelected && validTargets.Contains (point))
+					if (somethingSelected && validTargets.Keys.Contains (point))
 				{
-					// unitSelected.AttackAnnimation ();
+					var move = GetMaxMove (selectedPoint, point);
+					MoveUnitFromPointToPoint (selectedPoint, move);
 					EndAction ();
 					turn.PlayersTurn = false;
 				}
@@ -193,10 +193,11 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	public void SelectUnitAtPoint (FlatHexPoint point)
 	{
-		validTargets.Clear ();
+		
 		unitSelected = grid [point].unit;
 		somethingSelected = true;
 		selectedPoint = point;
+		validTargets = GetValidTargets (point);
 
 
 	}
@@ -213,7 +214,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		foreach (var point in JKCells)
 		{
 			grid [point].border.enabled = true;
-//			grid [point].border.color = Color.blue;
+			grid [point].border.color = Color.blue;
 		}
 
 	}
@@ -245,7 +246,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		somethingSelected = false;								//Set somethingSelected to false
 		unitSelected = null;									//Set the unitSelected to null
 		UnHighlightJKCells (AvailableMoves.Keys);
-		UnHighlightJKCells (validTargets);
+		UnHighlightJKCells (validTargets.Keys.ToList());
 		AvailableMoves.Clear ();
 		validTargets.Clear ();
 	}
@@ -267,7 +268,8 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 			(grid, point,
 				JKCell => JKCell.isAccessible,
-				(p, q) => (grid [p].Cost + grid [q].Cost / 2.0f),
+//				(p, q) => (grid [p].Cost + grid [q].Cost / 2.0f),
+				(p, q) => grid [q].Cost,
 				grid [point].unit.movement
 			);
 				
@@ -277,43 +279,32 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		return null;
 	}
 
-	public List<FlatHexPoint> GetValidTargets ()
+
+	public Dictionary<FlatHexPoint, float> GetValidTargets (FlatHexPoint point)
 	{
-		List<FlatHexPoint> result = new List<FlatHexPoint> ();
-
-		if (unitSelected != null && AvailableMoves != null)
+		float maxAttackRange = grid [point].unit.movement + grid [point].unit.attackRange;
+		Dictionary<FlatHexPoint, float> result = new Dictionary<FlatHexPoint, float> ();
+		var enemies = GetEnemyPositions ();
+	
+		foreach (var enemy in enemies)
 		{
-			foreach (var pointInRange in AvailableMoves.Keys)
+			var path = GetGridPath (point, enemy);
 			{
-				//For each point the unit can move to
-				//Check what enemies and in range of that point
-				var EnemiesInRangeFromPoint = Algorithms.GetPointsInRange<JKCell, FlatHexPoint>
-												(grid,
-					                            pointInRange,
-					JKCell => (JKCell.contents == CellContents.Enemy),
-					                            (p, q) => 1,
-					                            unitSelected.attackRange);
-								
-				//Add the any valid target to the result
-				//if the target is not already in the list
-				foreach (var target in EnemiesInRangeFromPoint)
+				float pathcost = 0.0f;
+				foreach(var step in path) 
 				{
-					if (grid [target].contents == CellContents.Enemy && !result.Contains(target))
-					{
-						result.Add (target);
-
-					}
-						
+					pathcost = pathcost + grid [step].Cost; 
+				}
+				if(pathcost <= maxAttackRange)
+				{
+					result.Add (enemy, pathcost);
 				}
 			}
 
-			return result;
-			
 		}
 
-		return null;
-
-	}
+			return result;
+		}
 
 	public List<FlatHexPoint> GetGridPath (FlatHexPoint start, FlatHexPoint end)
 	{
@@ -327,15 +318,15 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 			(p, q) =>  (grid [p].Cost + grid [q].Cost / 2) 
 		);
 
+		result = path.ToList ();
 
-
-		foreach(var step in path.ToList ())
-		{
-			if(grid[step].isAccessible)
-			{
-				result.Add (step);
-			}
-		}
+//		foreach(var step in path.ToList ())
+//		{
+//			if(grid[step].isAccessible)
+//			{
+//				result.Add (step);
+//			}
+//		}
 
 
 		return result;
@@ -350,7 +341,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		var range =  Algorithms.GetPointsInRangeCost<JKCell, FlatHexPoint>
 													(grid, source,
 														JKCell => JKCell.isAccessible,
-														(p, q) => (grid [p].Cost + grid [q].Cost / 2.0f),
+														(p, q) => grid [q].Cost,
 														grid [source].unit.movement);
 
 		//Start point
@@ -364,7 +355,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 			float maxMoveCost = 0.0f;
 			if (range.Keys.Contains (step))
 			{
-				grid [step].Color = Color.blue;
+//				grid [step].Color = Color.blue;
 				float thisMoveCost = range [step];
 
 					if (thisMoveCost > maxMoveCost)
@@ -375,7 +366,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 			}
 		}
 
-		grid [waypoint].Color = Color.red;
+//		grid [waypoint].Color = Color.red;
 		return waypoint;
 	}
 
