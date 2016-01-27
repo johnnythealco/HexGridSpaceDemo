@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Unit : MonoBehaviour {
-	
+
+	#region Variables
 	public float movement = 3;
 	public float moveTime = 0.1f;
 	public float rotateTime = 2.0f;
@@ -13,8 +14,9 @@ public class Unit : MonoBehaviour {
 	public TurnManager turnmanager; 
 	
 	private float inverseMoveTime;
+	#endregion
 
-
+	#region Start & Update
 	protected virtual void Start ()
 	{
 		inverseMoveTime = 1 / moveTime;
@@ -22,6 +24,13 @@ public class Unit : MonoBehaviour {
 
 	}
 
+
+	void Update () {
+
+	}
+	#endregion
+
+	#region Getters & Setters
 	public void SetPosition (Vector3 newPosition)
 	{
 		transform.position = newPosition;
@@ -31,14 +40,9 @@ public class Unit : MonoBehaviour {
 	{
 		return transform.position;
 	}
-
+	#endregion
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-	
-	
+	#region Movement & Rotation
 	public void Move (List<Vector3> waypoints)
 	{
 
@@ -54,8 +58,21 @@ public class Unit : MonoBehaviour {
 
 //
 	}
+	#endregion
+
+	public void TakeDamage(int damage)
+	{
+		health = health - damage;
+
+		if(health <= 0)
+		{
+			Destroy (this.gameObject);
+		}
+	}
 
 
+
+	#region Co-Routines
 	protected IEnumerator SmoothMovement (List<Vector3> waypoints)
 	{
 		 turnmanager.Moving = true; 
@@ -79,4 +96,5 @@ public class Unit : MonoBehaviour {
 		 turnmanager.Moving = false;
 
 	}
+	#endregion
 }

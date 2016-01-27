@@ -4442,7 +4442,6 @@ MonoBehaviour:
   turn: {fileID: 399314851}
   somethingSelected: 0
   unitSelected: {fileID: 0}
-  validTargets: []
 --- !u!114 &399314853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8917,19 +8916,19 @@ MonoBehaviour:
     sensitivity: -25
   depthTranslation:
     activate: 0
-    mouseButton: 0
+    mouseButton: 1
     modifiers:
       leftAlt: 0
       leftControl: 0
       leftShift: 0
-    sensitivity: 2
+    sensitivity: 20
   scroll:
     activate: 1
     modifiers:
       leftAlt: 0
       leftControl: 0
       leftShift: 0
-    sensitivity: 200
+    sensitivity: 400
   mouseHorizontalAxisName: Mouse X
   mouseVerticalAxisName: Mouse Y
   scrollAxisName: Mouse ScrollWheel

@@ -27,7 +27,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	
 	#endregion
 	
-		override public void InitGrid ()
+	override public void InitGrid ()
 	{
 		somethingSelected = false;
 		validTargets = new  Dictionary<FlatHexPoint, float>(); 
@@ -52,9 +52,11 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		{
 			 CreateEnemy (point);
 		}
+
+		turn.StartPlayerTurn ();
 	}
 		
-		#region Unit & Enemy Creation
+	#region Unit & Enemy Creation
 
 	private void CreateUnit (FlatHexPoint point)
 	{
@@ -110,33 +112,43 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 			switch (grid [point].contents)
 			{
 			case CellContents.Player:
+				// If Nothing is selected select the Unit	
 				if (!somethingSelected)
 				{
+
 					SelectUnitAtPoint (point); 
 					AvailableMoves = GetAvailableMoves (point);
 					HighlightMove (AvailableMoves.Keys);
 					HighlightTargets (GetValidTargets (selectedPoint).Keys.ToList()); 
 				}
+					//deselect the Unit
+					else	if(grid[point].unit == unitSelected)
+					{
+						EndAction ();
+					}
 				break;
 
 			case CellContents.Empty:
+					//Move the selected unit to an empty cell
 				if (somethingSelected && AvailableMoves.ContainsKey (point))
 				{
 					unitSelected.Face (Map [point]);
 					MoveUnitFromPointToPoint (selectedPoint, point);
 					EndAction ();
-					turn.PlayersTurn = false;
+					turn.EndPlayerMove ();
 
 				} 
 				break;
 
 			case CellContents.Enemy:
+					//attack enemy in range
 					if (somethingSelected && validTargets.Keys.Contains (point))
 				{
 					var move = GetMaxMove (selectedPoint, point);
 					MoveUnitFromPointToPoint (selectedPoint, move);
+					grid [point].unit.TakeDamage (unitSelected.damage);
 					EndAction ();
-					turn.PlayersTurn = false;
+					turn.EndPlayerMove ();
 				}
 				break;
 			}
@@ -162,7 +174,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	public void MoveUnitFromPointToPoint (FlatHexPoint start, FlatHexPoint end) 
 	{
-		if (grid [end].contents == CellContents.Empty && grid [end].isAccessible)
+		if (grid[start].unit != null && grid [end].contents == CellContents.Empty && grid [end].isAccessible)
 		{
 			grid [start].unit.Move (GetWaypoints (start, end));
 
@@ -178,7 +190,6 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	}
 
 
-
 	public List<Vector3> GetWaypoints(FlatHexPoint start, FlatHexPoint end)
 	{
 		var path = GetGridPath(start, end); 														//Get the grid path to the target
@@ -190,6 +201,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		}
 		return waypoints;
 	}
+
 
 	public void SelectUnitAtPoint (FlatHexPoint point)
 	{
@@ -205,6 +217,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 
 	#endregion
+
 
 	#region Grid Highlighting
 
@@ -284,7 +297,17 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	{
 		float maxAttackRange = grid [point].unit.movement + grid [point].unit.attackRange;
 		Dictionary<FlatHexPoint, float> result = new Dictionary<FlatHexPoint, float> ();
-		var enemies = GetEnemyPositions ();
+		List<FlatHexPoint> enemies = new List<FlatHexPoint> ();
+
+		if(grid[point].contents == CellContents.Player)
+		{
+			enemies = GetEnemyPositions ();
+		}
+		else if(grid[point].contents == CellContents.Enemy)
+		{
+			enemies = GetPlayerPositions ();
+		}
+
 	
 		foreach (var enemy in enemies)
 		{
@@ -420,6 +443,15 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 		}
 		return closestPlayer;
+	}
+
+	public void Attack(FlatHexPoint source, FlatHexPoint target)
+	{
+		if (grid [target].unit != null)
+		{
+			grid [target].unit.TakeDamage (grid [source].unit.damage);
+			EndAction ();
+		}
 	}
 
 

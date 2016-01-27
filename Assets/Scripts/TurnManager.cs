@@ -11,14 +11,20 @@ public class TurnManager : MonoBehaviour {
 
 
 	public GameManager BattleManager;
+
+
+	private int remainingPlayerMoves;
+	private int remainingEnemyMoves;
 	// Use this for initialization
 	void Start () {
+
 
 		PlayersTurn = true;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+	{
 
 		if(!PlayersTurn)
 		{
@@ -26,17 +32,66 @@ public class TurnManager : MonoBehaviour {
 			var enemies = BattleManager.GetEnemyPositions ();
 			foreach(var enemy in enemies)
 			{
+				var validTargets = BattleManager.GetValidTargets (enemy);
+				if(validTargets.Keys.Count > 0)
+				{
+					var target = BattleManager.GetClosestPlayer (enemy);
+					BattleManager.Attack(enemy, target);
+					endEnemyMove ();
+				}
+
 				var player = BattleManager.GetClosestPlayer (enemy);
 				var move = BattleManager.GetMaxMove (enemy, player);
 				moves.Add (enemy, move);
 			}
 			StartCoroutine (MoveQueue (moves));
-			PlayersTurn = true;
+
 
 		}
 	
 	}
 
+	#region Turn and Move Management
+	public void StartPlayerTurn()
+	{
+		remainingPlayerMoves =  BattleManager.GetPlayerPositions ().Count ();
+	}
+
+	public void EndPlayerTurn()
+	{
+		PlayersTurn = false;
+	}
+
+	public void EndPlayerMove()
+	{
+		remainingPlayerMoves = remainingPlayerMoves - 1;
+		if(remainingPlayerMoves <= 0)
+		{
+			EndPlayerTurn ();
+			startEnemyTurn ();
+		}
+	}
+
+	private void startEnemyTurn()
+	{
+		remainingEnemyMoves = BattleManager.GetEnemyPositions ().Count ();
+	}
+
+	private void endEnemyTurn()
+	{
+		PlayersTurn = true;
+	}
+
+	private void endEnemyMove()
+	{
+		remainingEnemyMoves = remainingEnemyMoves - 1;
+		if(remainingEnemyMoves <= 0)
+		{
+			endEnemyTurn ();
+			StartPlayerTurn ();
+		}
+	}
+	#endregion
 
 	protected IEnumerator MoveQueue (Dictionary<FlatHexPoint, FlatHexPoint> moveQueue)
 	{
@@ -49,13 +104,12 @@ public class TurnManager : MonoBehaviour {
 				if(!Moving)
 				{
 				BattleManager.MoveUnitFromPointToPoint (units.First (), moveQueue [units.First ()]);
-//				units.First().Move (moveQueue [units.First()]);
-//				moveQueue.Remove (units.First ());
 				units.Remove (units.First ());
 				}
 			yield return null;
 		}
 
-
+		endEnemyTurn ();
+		StartPlayerTurn ();
 	}
 }
