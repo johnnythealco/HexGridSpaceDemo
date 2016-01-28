@@ -982,6 +982,10 @@ Prefab:
       propertyPath: Cost
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 21234982, guid: 8d447e08c84ddea4da51666aaf9b38cd, type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: aa8322a3767a344b98d51048b8fe505a, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8d447e08c84ddea4da51666aaf9b38cd, type: 2}
   m_IsPrefabParent: 0
@@ -4437,8 +4441,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86545def8c035e641905fdc980bf8f41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitPrefab: {fileID: 176510, guid: 708e687af7d62714db2f12aa4ef95f55, type: 2}
-  enemyPrefab: {fileID: 104230, guid: 2f648639c07db844f9c190b165c701d7, type: 2}
+  unitPrefab: {fileID: 180838, guid: 708e687af7d62714db2f12aa4ef95f55, type: 2}
+  enemyPrefab: {fileID: 125632, guid: d033670c6684b83488475a0be5d2e43a, type: 2}
   turn: {fileID: 399314851}
   somethingSelected: 0
   unitSelected: {fileID: 0}

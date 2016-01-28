@@ -120,6 +120,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 					AvailableMoves = GetAvailableMoves (point);
 					HighlightMove (AvailableMoves.Keys);
 					HighlightTargets (GetValidTargets (selectedPoint).Keys.ToList()); 
+
 				}
 					//deselect the Unit
 					else	if(grid[point].unit == unitSelected)
@@ -138,18 +139,28 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 					turn.EndPlayerMove ();
 
 				} 
+					else 	if (!somethingSelected)
+					{
+						UnHighlightJKCells ();	
+					}
 				break;
 
 			case CellContents.Enemy:
 					//attack enemy in range
 					if (somethingSelected && validTargets.Keys.Contains (point))
 				{
-					var move = GetMaxMove (selectedPoint, point);
-					MoveUnitFromPointToPoint (selectedPoint, move);
-					grid [point].unit.TakeDamage (unitSelected.damage);
+//					var move = GetMaxMove (selectedPoint, point);
+//					MoveUnitFromPointToPoint (selectedPoint, move);
+					Attack (selectedPoint, point);
 					EndAction ();
 					turn.EndPlayerMove ();
 				}
+					else 	if (!somethingSelected)
+					{
+					UnHighlightJKCells ();
+					HighlightMove (GetAvailableMoves (point).Keys);
+					HighlightTargets (GetValidTargets (point).Keys.ToList()); 
+					}
 				break;
 			}
 		
@@ -232,10 +243,10 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	}
 
-	public void UnHighlightJKCells (IEnumerable<FlatHexPoint> JKCells)
+	public void UnHighlightJKCells ()
 	{
 		//deactivates the border on the set of JKCells provided
-		foreach (var point in JKCells)
+		foreach (var point in Grid)
 		{
 			grid [point].border.enabled = false;
 		}
@@ -258,8 +269,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	{
 		somethingSelected = false;								//Set somethingSelected to false
 		unitSelected = null;									//Set the unitSelected to null
-		UnHighlightJKCells (AvailableMoves.Keys);
-		UnHighlightJKCells (validTargets.Keys.ToList());
+		UnHighlightJKCells ();
 		AvailableMoves.Clear ();
 		validTargets.Clear ();
 	}
@@ -447,9 +457,16 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	public void Attack(FlatHexPoint source, FlatHexPoint target)
 	{
-		if (grid [target].unit != null)
+		if (grid [target].unit != null && grid[source].unit != null)
 		{
-			grid [target].unit.TakeDamage (grid [source].unit.damage);
+			grid [source].unit.Face (Map [target]);
+			grid [source].unit.weapon1.FireAt (Map [target]);
+			grid [target].unit.health = grid [target].unit.health - grid [source].unit.damage;
+				if(grid [target].unit.health <= 0)
+				{
+					grid [target].unit.DestroyUnit(); 
+					grid [target].contents = CellContents.Empty;
+				}	
 			EndAction ();
 		}
 	}

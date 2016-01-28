@@ -33,16 +33,19 @@ public class TurnManager : MonoBehaviour {
 			foreach(var enemy in enemies)
 			{
 				var validTargets = BattleManager.GetValidTargets (enemy);
-				if(validTargets.Keys.Count > 0)
+				if (validTargets.Keys.Count > 0)
 				{
 					var target = BattleManager.GetClosestPlayer (enemy);
-					BattleManager.Attack(enemy, target);
+					BattleManager.Attack (enemy, target);
+					endEnemyMove ();
+				} 
+				else
+				{
+					var player = BattleManager.GetClosestPlayer (enemy);
+					var move = BattleManager.GetMaxMove (enemy, player);
+					moves.Add (enemy, move);
 					endEnemyMove ();
 				}
-
-				var player = BattleManager.GetClosestPlayer (enemy);
-				var move = BattleManager.GetMaxMove (enemy, player);
-				moves.Add (enemy, move);
 			}
 			StartCoroutine (MoveQueue (moves));
 

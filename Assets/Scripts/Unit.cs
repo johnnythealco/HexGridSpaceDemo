@@ -11,7 +11,10 @@ public class Unit : MonoBehaviour {
 	public int health = 100;
 	public int damage = 50;
 	public float attackRange = 1;
-	public TurnManager turnmanager; 
+	public TurnManager turnmanager;
+	public Weapon weapon1;
+
+
 	
 	private float inverseMoveTime;
 	#endregion
@@ -60,14 +63,9 @@ public class Unit : MonoBehaviour {
 	}
 	#endregion
 
-	public void TakeDamage(int damage)
+	public void DestroyUnit()
 	{
-		health = health - damage;
-
-		if(health <= 0)
-		{
-			Destroy (this.gameObject);
-		}
+	Destroy (this.gameObject);
 	}
 
 
