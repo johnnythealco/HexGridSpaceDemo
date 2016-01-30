@@ -57,6 +57,7 @@ public class TurnManager : MonoBehaviour {
 	#region Turn and Move Management
 	public void StartPlayerTurn()
 	{
+		BattleManager.CheckIfBattleOver ();
 		remainingPlayerMoves =  BattleManager.GetPlayerPositions ().Count ();
 	}
 
@@ -77,6 +78,7 @@ public class TurnManager : MonoBehaviour {
 
 	private void startEnemyTurn()
 	{
+		BattleManager.CheckIfBattleOver ();
 		remainingEnemyMoves = BattleManager.GetEnemyPositions ().Count ();
 	}
 

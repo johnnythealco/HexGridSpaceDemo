@@ -3,6 +3,7 @@ using System.Collections;
 using Gamelogic.Grids;
 using Gamelogic;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 using System.Linq;
 
@@ -14,6 +15,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	public GameObject unitPrefab;
 	public GameObject enemyPrefab;
 	public TurnManager turn;
+	public Text battleOverText;
 
 	
 	
@@ -23,14 +25,22 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	public Dictionary<FlatHexPoint, float> validTargets;
 	private FlatHexPoint selectedPoint;
 	private Dictionary<FlatHexPoint, float> AvailableMoves;
-	private FlatHexPoint enemyPosition; 
+	private FlatHexPoint enemyPosition;
+	private bool battleOver;
 	
 	#endregion
+
+	void OnAwake()
+	{
+		somethingSelected = false;
+		battleOver = false;
+		battleOverText.enabled = false;
+		validTargets = new  Dictionary<FlatHexPoint, float>(); 
+	}
 	
 	override public void InitGrid ()
 	{
-		somethingSelected = false;
-		validTargets = new  Dictionary<FlatHexPoint, float>(); 
+
 		grid = Grid.CastValues<JKCell, FlatHexPoint> ();
 
 				foreach (var point in Grid)
@@ -277,7 +287,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	#endregion
 
 
-	#region Moves & Target Algorithms
+	#region Move & Target Algorithms
 
 	public Dictionary<FlatHexPoint, float> GetAvailableMoves (FlatHexPoint point)
 	{
@@ -455,17 +465,23 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		return closestPlayer;
 	}
 
-	public void Attack(FlatHexPoint source, FlatHexPoint target)
+	public void Attack(FlatHexPoint source, FlatHexPoint destination)
 	{
-		if (grid [target].unit != null && grid[source].unit != null)
+		if (grid [destination].unit != null && grid[source].unit != null)
 		{
-			grid [source].unit.Face (Map [target]);
-			grid [source].unit.weapon1.FireAt (Map [target]);
-			grid [target].unit.health = grid [target].unit.health - grid [source].unit.damage;
-				if(grid [target].unit.health <= 0)
+			var attacker = grid [source].unit;
+			var target = grid [destination].unit;
+
+			attacker.Face (Map [destination]);
+			attacker.weapon1.FireAt (Map [destination]);
+
+			target.health = target.health - attacker.damage;
+			target.healthSlider.value = target.health;
+
+				if(target.health <= 0)
 				{
-					grid [target].unit.DestroyUnit(); 
-					grid [target].contents = CellContents.Empty;
+					target.DestroyUnit(); 
+					grid [destination].contents = CellContents.Empty;
 				}	
 			EndAction ();
 		}
@@ -474,6 +490,23 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	#endregion
 
+	public void CheckIfBattleOver()
+	{
+		int playerUnits = GetPlayerPositions ().Count ();
+		int enemyUnits = GetEnemyPositions ().Count ();
+
+		if (playerUnits <= 0)
+		{
+			battleOverText.text = "! Defeat !"; 
+			battleOverText.enabled = true;
+		}
+		else if (enemyUnits <= 0 )
+		{
+			battleOverText.text = "! Victory !";
+		battleOverText.enabled = true;
+		}
+		
+	}
 
 
 }

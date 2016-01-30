@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Unit : MonoBehaviour {
 
@@ -13,6 +14,10 @@ public class Unit : MonoBehaviour {
 	public float attackRange = 1;
 	public TurnManager turnmanager;
 	public Weapon weapon1;
+	public GameObject Explosion;
+	public Slider healthSlider;
+
+
 
 
 	
@@ -22,8 +27,10 @@ public class Unit : MonoBehaviour {
 	#region Start & Update
 	protected virtual void Start ()
 	{
+		healthSlider = GetComponentInChildren<Slider> ();
 		inverseMoveTime = 1 / moveTime;
 		this.transform.Rotate (0, -90, 90);
+		healthSlider.value = health;
 
 	}
 
@@ -63,8 +70,11 @@ public class Unit : MonoBehaviour {
 	}
 	#endregion
 
+
+
 	public void DestroyUnit()
 	{
+//		GameObject explosion = Instantiate (Explosion, this.transform.position, this.transform.rotation) as GameObject;
 	Destroy (this.gameObject);
 	}
 

@@ -18,6 +18,7 @@ public class Weapon : MonoBehaviour {
 		
 
 		StartCoroutine (SmoothMovement (target));
+		GetComponent<AudioSource>().Play ();
 
 
 	}
@@ -36,6 +37,7 @@ public class Weapon : MonoBehaviour {
 				yield return null;
 
 			}
+		Destroy (bolt);
 
 
 	}
