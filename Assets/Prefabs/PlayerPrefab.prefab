@@ -380,7 +380,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f526bd61b2fb9914192c8460a2ad859b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bolt: {fileID: 168126, guid: 7178cf3793b5e9a419d465cea3836f01, type: 2}
+  Bolt: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
   spawnPoint: {fileID: 402248}
   shotSpeed: 5000
 --- !u!114 &11478024
@@ -559,7 +559,7 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: Bolt
       value: 
-      objectReference: {fileID: 168126, guid: 7178cf3793b5e9a419d465cea3836f01, type: 2}
+      objectReference: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
     - target: {fileID: 0}
       propertyPath: weapon1
       value: 

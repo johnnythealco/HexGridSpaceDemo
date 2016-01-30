@@ -10,6 +10,7 @@ public class TurnManager : MonoBehaviour {
 	public bool Moving{ get; set;}
 
 
+
 	public GameManager BattleManager;
 
 
@@ -26,7 +27,7 @@ public class TurnManager : MonoBehaviour {
 	void Update ()
 	{
 
-		if(!PlayersTurn)
+		if(!PlayersTurn && !Moving)
 		{
 			Dictionary<FlatHexPoint, FlatHexPoint> moves = new Dictionary<FlatHexPoint, FlatHexPoint> ();
 			var enemies = BattleManager.GetEnemyPositions ();
@@ -57,7 +58,7 @@ public class TurnManager : MonoBehaviour {
 	#region Turn and Move Management
 	public void StartPlayerTurn()
 	{
-		BattleManager.CheckIfBattleOver ();
+		
 		remainingPlayerMoves =  BattleManager.GetPlayerPositions ().Count ();
 	}
 
@@ -68,6 +69,7 @@ public class TurnManager : MonoBehaviour {
 
 	public void EndPlayerMove()
 	{
+		BattleManager.CheckIfBattleOver ();
 		remainingPlayerMoves = remainingPlayerMoves - 1;
 		if(remainingPlayerMoves <= 0)
 		{
@@ -78,7 +80,7 @@ public class TurnManager : MonoBehaviour {
 
 	private void startEnemyTurn()
 	{
-		BattleManager.CheckIfBattleOver ();
+		
 		remainingEnemyMoves = BattleManager.GetEnemyPositions ().Count ();
 	}
 
@@ -89,6 +91,7 @@ public class TurnManager : MonoBehaviour {
 
 	private void endEnemyMove()
 	{
+		BattleManager.CheckIfBattleOver ();
 		remainingEnemyMoves = remainingEnemyMoves - 1;
 		if(remainingEnemyMoves <= 0)
 		{

@@ -263,7 +263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f526bd61b2fb9914192c8460a2ad859b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Bolt: {fileID: 122986, guid: e928f2e628432b141a13e2b1fcf133ca, type: 2}
+  Bolt: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
   spawnPoint: {fileID: 472476}
   shotSpeed: 3000
 --- !u!114 &11448176
@@ -568,6 +568,10 @@ Prefab:
       propertyPath: m_LocalRotation.w
       value: 0.7071067
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: Bolt
+      value: 
+      objectReference: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 121852}
