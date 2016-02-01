@@ -16,6 +16,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	public GameObject enemyPrefab;
 	public TurnManager turn;
 	public Text battleOverText;
+	public GameObject[] ships;
 
 	
 	
@@ -26,14 +27,14 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	private FlatHexPoint selectedPoint;
 	private Dictionary<FlatHexPoint, float> AvailableMoves;
 	private FlatHexPoint enemyPosition;
-	private bool battleOver;
+//	private bool battleOver;
 	
 	#endregion
 
 	void OnAwake()
 	{
 		somethingSelected = false;
-		battleOver = false;
+//		battleOver = false;
 		battleOverText.enabled = false;
 		validTargets = new  Dictionary<FlatHexPoint, float>(); 
 	}
@@ -480,8 +481,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 				if(target.health <= 0)
 				{
-					target.DestroyUnit(); 
-					grid [destination].contents = CellContents.Empty;
+				StartCoroutine (UnitDestruction (destination));
 				}	
 			EndAction ();
 		}
@@ -506,6 +506,20 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		battleOverText.enabled = true;
 		}
 		
+	}
+
+	protected IEnumerator UnitDestruction ( FlatHexPoint unit)
+	{
+		while (grid [unit].unit != null)
+		{
+			if (!turn.Moving)
+			{
+				grid [unit].contents = CellContents.Empty;
+				grid [unit].unit.DestroyUnit ();
+			}
+			yield return null;
+		
+		}
 	}
 
 

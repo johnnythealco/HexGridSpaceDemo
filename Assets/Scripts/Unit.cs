@@ -12,10 +12,10 @@ public class Unit : MonoBehaviour {
 	public int health = 100;
 	public int damage = 50;
 	public float attackRange = 1;
-	public TurnManager turnmanager;
+	public TurnManager turnmanager{ get; set;}
 	public Weapon weapon1;
-	public GameObject Explosion;
-	public Slider healthSlider;
+//	public GameObject Explosion;
+	public Slider healthSlider{ get; set;}
 
 
 
@@ -35,9 +35,7 @@ public class Unit : MonoBehaviour {
 	}
 
 
-	void Update () {
 
-	}
 	#endregion
 
 	#region Getters & Setters

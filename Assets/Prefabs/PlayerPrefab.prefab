@@ -60,8 +60,9 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 402248}
+  - 114: {fileID: 11488494}
   m_Layer: 0
-  m_Name: SpawnPoint
+  m_Name: WeaponSpwanPoint1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,8 +79,6 @@ GameObject:
   - 33: {fileID: 3308190}
   - 23: {fileID: 2393026}
   - 114: {fileID: 11440544}
-  - 114: {fileID: 11463480}
-  - 82: {fileID: 8209074}
   m_Layer: 0
   m_Name: PlayerPrefab
   m_TagString: Untagged
@@ -178,80 +177,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 180838}
   m_Mesh: {fileID: 4300002, guid: d9808401c68af274a8edfbed3d1b53c7, type: 3}
---- !u!82 &8209074
-AudioSource:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 180838}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: bf75b984df8a84987bcf3a8bf6e2862d, type: 3}
-  m_PlayOnAwake: 0
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
 --- !u!114 &11438060
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -317,10 +242,7 @@ MonoBehaviour:
   health: 100
   damage: 25
   attackRange: 5
-  turnmanager: {fileID: 0}
-  weapon1: {fileID: 11463480}
-  Explosion: {fileID: 100008, guid: a93496017806b7740910df5fd946f306, type: 2}
-  healthSlider: {fileID: 0}
+  weapon1: {fileID: 11488494}
 --- !u!114 &11448906
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -369,20 +291,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &11463480
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 180838}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f526bd61b2fb9914192c8460a2ad859b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Bolt: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
-  spawnPoint: {fileID: 402248}
-  shotSpeed: 5000
 --- !u!114 &11478024
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -410,6 +318,18 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &11488494
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 178282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e58ba56bd939d94cb5895a29717687d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Armament: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
 --- !u!114 &11498338
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -563,7 +483,7 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: weapon1
       value: 
-      objectReference: {fileID: 11463480}
+      objectReference: {fileID: 11488494}
     - target: {fileID: 0}
       propertyPath: weapon2
       value: 
@@ -592,6 +512,10 @@ Prefab:
       propertyPath: m_PlayOnAwake
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: Armament
+      value: 
+      objectReference: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 180838}

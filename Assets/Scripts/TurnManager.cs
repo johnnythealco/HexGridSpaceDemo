@@ -8,6 +8,7 @@ public class TurnManager : MonoBehaviour {
 
 	public bool PlayersTurn;
 	public bool Moving{ get; set;}
+	public static TurnManager turn;
 
 
 
@@ -16,7 +17,16 @@ public class TurnManager : MonoBehaviour {
 
 	private int remainingPlayerMoves;
 	private int remainingEnemyMoves;
-	// Use this for initialization
+
+	void Awake()
+	{
+		if(turn == null)
+		{
+			turn = this;
+		}
+	}
+
+
 	void Start () {
 
 
@@ -29,6 +39,7 @@ public class TurnManager : MonoBehaviour {
 
 		if(!PlayersTurn && !Moving)
 		{
+			Dictionary<FlatHexPoint, FlatHexPoint> attacks = new Dictionary<FlatHexPoint, FlatHexPoint> ();
 			Dictionary<FlatHexPoint, FlatHexPoint> moves = new Dictionary<FlatHexPoint, FlatHexPoint> ();
 			var enemies = BattleManager.GetEnemyPositions ();
 			foreach(var enemy in enemies)
@@ -37,7 +48,8 @@ public class TurnManager : MonoBehaviour {
 				if (validTargets.Keys.Count > 0)
 				{
 					var target = BattleManager.GetClosestPlayer (enemy);
-					BattleManager.Attack (enemy, target);
+					attacks.Add (enemy, target);
+//					BattleManager.Attack (enemy, target);
 					endEnemyMove ();
 				} 
 				else
@@ -48,6 +60,7 @@ public class TurnManager : MonoBehaviour {
 					endEnemyMove ();
 				}
 			}
+			StartCoroutine (AttackQueue (attacks));
 			StartCoroutine (MoveQueue (moves));
 
 
@@ -80,8 +93,7 @@ public class TurnManager : MonoBehaviour {
 
 	private void startEnemyTurn()
 	{
-		
-		remainingEnemyMoves = BattleManager.GetEnemyPositions ().Count ();
+		remainingEnemyMoves = BattleManager.GetEnemyPositions ().Count (); 
 	}
 
 	private void endEnemyTurn()
@@ -100,6 +112,27 @@ public class TurnManager : MonoBehaviour {
 		}
 	}
 	#endregion
+
+	protected IEnumerator AttackQueue (Dictionary<FlatHexPoint, FlatHexPoint> attackQueue)
+	{
+		yield return new WaitForSeconds (0.5f);
+		var units = attackQueue.Keys.ToList ();
+
+
+		while(!units.IsEmpty())
+		{
+			if(!Moving)
+			{
+				BattleManager.Attack (units.First (), attackQueue [units.First ()]);
+
+				units.Remove (units.First ());
+				yield return new WaitForSeconds (0.3f);
+			}
+			yield return null;
+		}
+
+
+	}
 
 	protected IEnumerator MoveQueue (Dictionary<FlatHexPoint, FlatHexPoint> moveQueue)
 	{
