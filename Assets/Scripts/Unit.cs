@@ -6,15 +6,17 @@ using UnityEngine.UI;
 public class Unit : MonoBehaviour {
 
 	#region Variables
+	public string name;
+	public Sprite image;
 	public float movement = 3;
-	public float moveTime = 0.1f;
-	public float rotateTime = 2.0f;
+	public float MoveSpeed = 100f;
+
 	public int health = 100;
 	public int damage = 50;
 	public float attackRange = 1;
-	public TurnManager turnmanager{ get; set;}
+
 	public Weapon weapon1;
-//	public GameObject Explosion;
+
 	public Slider healthSlider{ get; set;}
 
 
@@ -28,7 +30,6 @@ public class Unit : MonoBehaviour {
 	protected virtual void Start ()
 	{
 		healthSlider = GetComponentInChildren<Slider> ();
-		inverseMoveTime = 1 / moveTime;
 		this.transform.Rotate (0, -90, 90);
 		healthSlider.value = health;
 
@@ -81,7 +82,7 @@ public class Unit : MonoBehaviour {
 	#region Co-Routines
 	protected IEnumerator SmoothMovement (List<Vector3> waypoints)
 	{
-		 turnmanager.Moving = true; 
+		TurnManager.turn.Moving = true; 
 //		 animator.SetBool ("Walking", true);
 		foreach (var waypoint in waypoints)
 		{
@@ -90,7 +91,7 @@ public class Unit : MonoBehaviour {
 
 			while (sqrRemainingDistance > float.Epsilon) //Epsion is the smallest value that a float can have different from zero.
 			{
-				Vector3 newPosition = Vector3.MoveTowards (transform.position, waypoint, inverseMoveTime * Time.deltaTime);
+				Vector3 newPosition = Vector3.MoveTowards (transform.position, waypoint,MoveSpeed * Time.deltaTime);
 				transform.position = newPosition;
 				sqrRemainingDistance = (transform.position - waypoint).sqrMagnitude;
 
@@ -99,7 +100,7 @@ public class Unit : MonoBehaviour {
 			}
 		}
 		// animator.SetBool ("Walking", false);
-		 turnmanager.Moving = false;
+		TurnManager.turn.Moving = false;
 
 	}
 	#endregion

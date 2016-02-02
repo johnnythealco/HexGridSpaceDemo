@@ -15,7 +15,6 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	public GameObject unitPrefab;
 	public GameObject enemyPrefab;
 	public TurnManager turn;
-	public Text battleOverText;
 	public GameObject[] ships;
 
 	
@@ -34,8 +33,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	void OnAwake()
 	{
 		somethingSelected = false;
-//		battleOver = false;
-		battleOverText.enabled = false;
+		BattleHUD.HUD.BattleOverText.enabled = false;
 		validTargets = new  Dictionary<FlatHexPoint, float>(); 
 	}
 	
@@ -49,6 +47,8 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 			grid [point].contents = CellContents.Empty;
 			grid [point].Cost = 1.0f;
 			grid [point].isAccessible = true;
+
+
 		}
 	
 	
@@ -79,7 +79,6 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 		grid [point].unit = unit;
 		grid [point].isAccessible = false;
-		unit.turnmanager = turn;
 	}
 
 	private void CreateEnemy (FlatHexPoint point)
@@ -91,7 +90,6 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 		grid [point].unit = unit;
 		grid [point].isAccessible = false;
-		unit.turnmanager = turn;
 
 	}
 
@@ -160,8 +158,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 					//attack enemy in range
 					if (somethingSelected && validTargets.Keys.Contains (point))
 				{
-//					var move = GetMaxMove (selectedPoint, point);
-//					MoveUnitFromPointToPoint (selectedPoint, move);
+
 					Attack (selectedPoint, point);
 					EndAction ();
 					turn.EndPlayerMove ();
@@ -179,12 +176,37 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		}
 	}
 
+	public void RightClickAction ()
+	{
+		var ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+
+		RaycastHit hit;
+
+		if (Physics.Raycast (ray, out hit))
+		{
+			Vector3 worldPosition = this.transform.InverseTransformPoint (hit.point);
+
+
+			var point = Map [worldPosition]; 
+
+			ShowTargetHud (point);
+
+		}
+	}
+
 	public void Update()
 	{
 		if (Input.GetMouseButtonDown(0))
 		{
 
 			LeftClickAction ();
+
+		}
+
+		if (Input.GetMouseButtonDown(1))
+		{
+
+			RightClickAction ();
 
 		}
 	}
@@ -242,6 +264,14 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 
 	#region Grid Highlighting
+
+	private void ShowTargetHud(FlatHexPoint point)
+	{
+		BattleHUD.HUD.TargetHealth.value = grid [point].unit.health;
+		BattleHUD.HUD.TargetText.text = grid [point].unit.name;
+		BattleHUD.HUD.TargetImage.sprite = grid [point].unit.image;
+		BattleHUD.HUD.TargetPanel.SetActive (true);
+	}
 
 	public void HighlightMove (IEnumerable<FlatHexPoint> JKCells)
 	{
@@ -478,9 +508,11 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 			target.health = target.health - attacker.damage;
 			target.healthSlider.value = target.health;
+			ShowTargetHud (destination);
 
 				if(target.health <= 0)
 				{
+				BattleHUD.HUD.TargetPanel.SetActive (false);
 				StartCoroutine (UnitDestruction (destination));
 				}	
 			EndAction ();
@@ -497,13 +529,13 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 		if (playerUnits <= 0)
 		{
-			battleOverText.text = "! Defeat !"; 
-			battleOverText.enabled = true;
+			BattleHUD.HUD.BattleOverText.text = "! Defeat !"; 
+			BattleHUD.HUD.BattleOverText.enabled = true;
 		}
 		else if (enemyUnits <= 0 )
 		{
-			battleOverText.text = "! Victory !";
-		battleOverText.enabled = true;
+			BattleHUD.HUD.BattleOverText.text = "! Victory !";
+			BattleHUD.HUD.BattleOverText.enabled = true; 
 		}
 		
 	}
