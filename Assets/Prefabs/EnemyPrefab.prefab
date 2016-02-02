@@ -276,12 +276,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb58e36d03f956449954b67aca931e16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: Hunter
+  image: {fileID: 21300000, guid: f3ba4481a5e68fc47988b835d299231d, type: 3}
   movement: 3
-  moveTime: 0.001
-  rotateTime: 2
+  MoveSpeed: 300
   health: 100
   damage: 25
-  attackRange: 1
+  attackRange: 3
   weapon1: {fileID: 11460718}
 --- !u!114 &11487374
 MonoBehaviour:
@@ -505,6 +506,23 @@ Prefab:
       propertyPath: spawnPoint
       value: 
       objectReference: {fileID: 472476}
+    - target: {fileID: 0}
+      propertyPath: attackRange
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: MoveSpeed
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: name
+      value: Hunter
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: image
+      value: 
+      objectReference: {fileID: 21300000, guid: f3ba4481a5e68fc47988b835d299231d,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 121852}

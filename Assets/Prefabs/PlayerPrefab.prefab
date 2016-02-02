@@ -236,9 +236,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb58e36d03f956449954b67aca931e16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: Scout
+  image: {fileID: 21300000, guid: 88a064056e8646747aa18b20ef0f03ee, type: 3}
   movement: 4
-  moveTime: 0.001
-  rotateTime: 2
+  MoveSpeed: 300
   health: 100
   damage: 25
   attackRange: 5
@@ -516,6 +517,19 @@ Prefab:
       propertyPath: Armament
       value: 
       objectReference: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
+    - target: {fileID: 0}
+      propertyPath: MoveSpeed
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: name
+      value: Scout
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: image
+      value: 
+      objectReference: {fileID: 21300000, guid: 88a064056e8646747aa18b20ef0f03ee,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 180838}
