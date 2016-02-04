@@ -3,17 +3,16 @@ using System.Collections;
 
 public class Weapon : MonoBehaviour {
 
+	public string weaponName;
 	public GameObject Armament; 
-//	public Transform spawnPoint;
+	public float damage = 1;
+	public int attackRange = 1;
 
 
 
 
-	void Start()
-	{
 
 
-	}
 
 	public virtual void FireAt(Vector3 target)
 	{

@@ -236,13 +236,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb58e36d03f956449954b67aca931e16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: Scout
+  unitName: 
   image: {fileID: 21300000, guid: 88a064056e8646747aa18b20ef0f03ee, type: 3}
   movement: 4
-  MoveSpeed: 300
+  MoveSpeed: 1000
   health: 100
-  damage: 25
-  attackRange: 5
+  Explosion: {fileID: 100008, guid: a93496017806b7740910df5fd946f306, type: 2}
   weapon1: {fileID: 11488494}
 --- !u!114 &11448906
 MonoBehaviour:
@@ -330,7 +329,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e58ba56bd939d94cb5895a29717687d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponName: Laser
   Armament: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
+  damage: 35
+  attackRange: 5
 --- !u!114 &11498338
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -491,7 +493,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: damage
-      value: 25
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: Explosion
@@ -519,17 +521,25 @@ Prefab:
       objectReference: {fileID: 136686, guid: f66b1890b8b0adb40a18898ea8aa4de5, type: 2}
     - target: {fileID: 0}
       propertyPath: MoveSpeed
-      value: 300
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: name
-      value: Scout
+      value: Laser
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: image
       value: 
       objectReference: {fileID: 21300000, guid: 88a064056e8646747aa18b20ef0f03ee,
         type: 3}
+    - target: {fileID: 0}
+      propertyPath: attackRange
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: weaponName
+      value: Laser
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 180838}

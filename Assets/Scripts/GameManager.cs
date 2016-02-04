@@ -346,7 +346,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	public Dictionary<FlatHexPoint, float> GetValidTargets (FlatHexPoint point)
 	{
-		float maxAttackRange = grid [point].unit.movement + grid [point].unit.attackRange;
+		float maxAttackRange = grid [point].unit.movement + grid [point].unit.weapon1.attackRange;
 		Dictionary<FlatHexPoint, float> result = new Dictionary<FlatHexPoint, float> ();
 		List<FlatHexPoint> enemies = new List<FlatHexPoint> ();
 
@@ -506,7 +506,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 			attacker.Face (Map [destination]);
 			attacker.weapon1.FireAt (Map [destination]);
 
-			target.health = target.health - attacker.damage;
+			target.health = target.health - attacker.weapon1.damage;
 			target.healthSlider.value = target.health;
 			ShowTargetHud (destination);
 

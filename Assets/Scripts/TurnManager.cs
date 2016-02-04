@@ -49,7 +49,7 @@ public class TurnManager : MonoBehaviour {
 				{
 					var target = BattleManager.GetClosestPlayer (enemy);
 					attacks.Add (enemy, target);
-//					BattleManager.Attack (enemy, target);
+
 					endEnemyMove ();
 				} 
 				else
@@ -115,7 +115,7 @@ public class TurnManager : MonoBehaviour {
 
 	protected IEnumerator AttackQueue (Dictionary<FlatHexPoint, FlatHexPoint> attackQueue)
 	{
-		yield return new WaitForSeconds (0.5f);
+		yield return new WaitForSeconds (0.8f);
 		var units = attackQueue.Keys.ToList ();
 
 

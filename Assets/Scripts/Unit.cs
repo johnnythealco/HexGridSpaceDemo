@@ -6,14 +6,15 @@ using UnityEngine.UI;
 public class Unit : MonoBehaviour {
 
 	#region Variables
-	public string name;
+	public string unitName;
 	public Sprite image;
 	public float movement = 3;
 	public float MoveSpeed = 100f;
 
-	public int health = 100;
-	public int damage = 50;
-	public float attackRange = 1;
+	public float health = 100;
+	public GameObject Explosion;
+//	public float damage = 50;
+//	public float attackRange = 1;
 
 	public Weapon weapon1;
 
@@ -73,7 +74,7 @@ public class Unit : MonoBehaviour {
 
 	public void DestroyUnit()
 	{
-//		GameObject explosion = Instantiate (Explosion, this.transform.position, this.transform.rotation) as GameObject;
+		GameObject explosion = Instantiate (Explosion, this.transform.position, this.transform.rotation) as GameObject;
 	Destroy (this.gameObject);
 	}
 
