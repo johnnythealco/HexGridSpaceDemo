@@ -17,8 +17,8 @@ public class Unit : MonoBehaviour {
 //	public float attackRange = 1;
 
 	public Weapon weapon1;
+	public Weapon[] weapons;
 
-	public Slider healthSlider{ get; set;}
 
 
 
@@ -30,9 +30,9 @@ public class Unit : MonoBehaviour {
 	#region Start & Update
 	protected virtual void Start ()
 	{
-		healthSlider = GetComponentInChildren<Slider> ();
+
 		this.transform.Rotate (0, -90, 90);
-		healthSlider.value = health;
+
 
 	}
 
@@ -62,11 +62,7 @@ public class Unit : MonoBehaviour {
 	public void Face(Vector3 position)
 	{
 
-		transform.LookAt (position, transform.up);
-	
-
-
-//
+		transform.LookAt (position,transform.up );
 	}
 	#endregion
 

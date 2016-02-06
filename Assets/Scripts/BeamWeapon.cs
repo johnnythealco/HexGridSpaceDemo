@@ -23,7 +23,7 @@ public class BeamWeapon : Weapon
 
 	protected IEnumerator Beam ( Vector3 target)
 	{
-		turnManager.Moving = true;
+		turnManager.Fireing = true;
 
 		GameObject laser = Instantiate (Armament, transform.position, transform.rotation) as GameObject; 
 		line = laser.GetComponent<LineRenderer> ();
@@ -33,7 +33,7 @@ public class BeamWeapon : Weapon
 		yield return new WaitForSeconds (0.3f);
 		Destroy (laser);
 
-		turnManager.Moving = false;
+		turnManager.Fireing = false;
 	}
 
 }

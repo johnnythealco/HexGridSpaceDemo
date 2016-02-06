@@ -15,7 +15,8 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	public GameObject unitPrefab;
 	public GameObject enemyPrefab;
 	public TurnManager turn;
-	public GameObject[] ships;
+	public Fleet PlayerFleet;
+	public Fleet EnemyFleet;
 
 	
 	
@@ -25,15 +26,17 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	public Dictionary<FlatHexPoint, float> validTargets;
 	private FlatHexPoint selectedPoint;
 	private Dictionary<FlatHexPoint, float> AvailableMoves;
-	private FlatHexPoint enemyPosition;
-//	private bool battleOver;
+	private FlatHexPoint selectedTarget;
+
+
 	
 	#endregion
 
 	void OnAwake()
 	{
 		somethingSelected = false;
-		BattleHUD.HUD.BattleOverText.enabled = false;
+
+
 		validTargets = new  Dictionary<FlatHexPoint, float>(); 
 	}
 	
@@ -51,34 +54,34 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 		}
 	
-	
-		var rndUnits = Grid.SampleRandom (3);
-		foreach (var point in rndUnits)
-		{
-			CreateUnit (point);
-		}
 
-		var rndEnemies = Grid.SampleRandom (3);
-		foreach (var point in rndEnemies)
-		{
-			 CreateEnemy (point);
-		}
+		var PlayerStartPoint = new FlatHexPoint (4, 6);
+		var EnemyStartPoint = new FlatHexPoint (18, -1);
+
+
+
+		DeployFleet (PlayerFleet, PlayerStartPoint);
+		DeployFleet (EnemyFleet, EnemyStartPoint);
+
+
+
 
 		turn.StartPlayerTurn ();
 	}
 		
 	#region Unit & Enemy Creation
 
-	private void CreateUnit (FlatHexPoint point)
+	private void CreateUnit (FlatHexPoint point, GameObject prefab, CellContents owner)
 	{
 
-		GameObject newUnit = Instantiate (unitPrefab, Map [point], Quaternion.identity) as GameObject;
+		GameObject newUnit = Instantiate (prefab, Map [point], Quaternion.identity) as GameObject;
 	
 		Unit unit = newUnit.GetComponent<Unit> ();
-		grid [point].contents = CellContents.Player;
+		grid [point].contents = owner;
 
 		grid [point].unit = unit;
 		grid [point].isAccessible = false;
+
 	}
 
 	private void CreateEnemy (FlatHexPoint point)
@@ -93,10 +96,21 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	}
 
-	public Unit GetUnitAtPoint(FlatHexPoint point)
+	private void DeployFleet(Fleet Fleet, FlatHexPoint center)
 	{
-		return grid [point].unit;
+		var deployment = getDeploymentArea (center, Fleet); 
+
+
+		for (int i = 0; i < Fleet.ships.Count(); i++) 
+		{
+			var point = deployment.RandomItem (); 
+			CreateUnit (point,Fleet.ships[i], Fleet.owner);
+			deployment.Remove (point);
+		}
 	}
+
+
+
 
 	#endregion
 	
@@ -158,10 +172,11 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 					//attack enemy in range
 					if (somethingSelected && validTargets.Keys.Contains (point))
 				{
+						ShowTargetHud (unitSelected, point);
+						selectedTarget = point;
 
-					Attack (selectedPoint, point);
-					EndAction ();
-					turn.EndPlayerMove ();
+//					EndAction ();
+
 				}
 					else 	if (!somethingSelected)
 					{
@@ -176,23 +191,23 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		}
 	}
 
-	public void RightClickAction ()
-	{
-		var ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-
-		RaycastHit hit;
-
-		if (Physics.Raycast (ray, out hit))
-		{
-			Vector3 worldPosition = this.transform.InverseTransformPoint (hit.point);
-
-
-			var point = Map [worldPosition]; 
-
-			ShowTargetHud (point);
-
-		}
-	}
+//	public void RightClickAction ()
+//	{
+//		var ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+//
+//		RaycastHit hit;
+//
+//		if (Physics.Raycast (ray, out hit))
+//		{
+//			Vector3 worldPosition = this.transform.InverseTransformPoint (hit.point);
+//
+//
+//			var point = Map [worldPosition]; 
+//
+//			ShowTargetHud (point);
+//
+//		}
+//	}
 
 	public void Update()
 	{
@@ -206,7 +221,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		if (Input.GetMouseButtonDown(1))
 		{
 
-			RightClickAction ();
+//			RightClickAction ();
 
 		}
 	}
@@ -265,12 +280,14 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	#region Grid Highlighting
 
-	private void ShowTargetHud(FlatHexPoint point)
+	private void ShowTargetHud(Unit unit, FlatHexPoint target)
 	{
-		BattleHUD.HUD.TargetHealth.value = grid [point].unit.health;
-		BattleHUD.HUD.TargetText.text = grid [point].unit.name;
-		BattleHUD.HUD.TargetImage.sprite = grid [point].unit.image;
+		BattleHUD.HUD.TargetHealth.value = grid [target].unit.health;
+		BattleHUD.HUD.TargetText.text = grid [target].unit.name;
+		BattleHUD.HUD.TargetImage.sprite = grid [target].unit.image;
 		BattleHUD.HUD.TargetPanel.SetActive (true);
+		BattleHUD.HUD.Weapon0Text.text = unit.weapons [0].weaponName;
+		BattleHUD.HUD.Weapon1Text.text = unit.weapons [1].weaponName;
 	}
 
 	public void HighlightMove (IEnumerable<FlatHexPoint> JKCells)
@@ -310,6 +327,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 	{
 		somethingSelected = false;								//Set somethingSelected to false
 		unitSelected = null;									//Set the unitSelected to null
+//		selectedTarget = null;
 		UnHighlightJKCells ();
 		AvailableMoves.Clear ();
 		validTargets.Clear ();
@@ -346,7 +364,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	public Dictionary<FlatHexPoint, float> GetValidTargets (FlatHexPoint point)
 	{
-		float maxAttackRange = grid [point].unit.movement + grid [point].unit.weapon1.attackRange;
+		float maxAttackRange = grid [point].unit.movement + grid [point].unit.weapons[0].attackRange;
 		Dictionary<FlatHexPoint, float> result = new Dictionary<FlatHexPoint, float> ();
 		List<FlatHexPoint> enemies = new List<FlatHexPoint> ();
 
@@ -496,32 +514,53 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 		return closestPlayer;
 	}
 
-	public void Attack(FlatHexPoint source, FlatHexPoint destination)
+
+
+
+	public List<FlatHexPoint> getDeploymentArea(FlatHexPoint point, Fleet fleet)
 	{
-		if (grid [destination].unit != null && grid[source].unit != null)
-		{
-			var attacker = grid [source].unit;
-			var target = grid [destination].unit;
-
-			attacker.Face (Map [destination]);
-			attacker.weapon1.FireAt (Map [destination]);
-
-			target.health = target.health - attacker.weapon1.damage;
-			target.healthSlider.value = target.health;
-			ShowTargetHud (destination);
-
-				if(target.health <= 0)
-				{
-				BattleHUD.HUD.TargetPanel.SetActive (false);
-				StartCoroutine (UnitDestruction (destination));
-				}	
-			EndAction ();
-		}
+		var result = Algorithms.GetPointsInRange<JKCell, FlatHexPoint>
+		(grid, point,
+			JKCell => JKCell.isAccessible,
+			(p, q) => 2,
+			fleet.ships.Count()
+		);
+		return result.ToList();
 	}
 
 
 	#endregion
 
+	public void WeaponSelect(int slot)
+	{
+		Attack (selectedPoint, selectedTarget, slot);
+	}
+
+	public void Attack(FlatHexPoint source, FlatHexPoint destination, int slot)
+	{
+		if (grid [destination].unit != null && grid[source].unit != null)
+		{
+			
+			var attacker = grid [source].unit;
+			var target = grid [destination].unit;
+
+			attacker.Face (Map [destination]);
+			attacker.weapons[slot].FireAt (Map [destination]); 
+
+			target.health = target.health - attacker.weapons[slot].damage;
+
+			ShowTargetHud (attacker, destination);
+
+
+			if(target.health <= 0)
+			{
+				BattleHUD.HUD.TargetPanel.SetActive (false);
+				StartCoroutine (UnitDestruction (destination));
+			}	
+			EndAction ();
+			turn.EndPlayerMove ();
+		}
+	}
 	public void CheckIfBattleOver()
 	{
 		int playerUnits = GetPlayerPositions ().Count ();
@@ -542,12 +581,15 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	protected IEnumerator UnitDestruction ( FlatHexPoint unit)
 	{
+		turn.Moving = true;
 		while (grid [unit].unit != null)
 		{
-			if (!turn.Moving)
+			if (!turn.Fireing)
 			{
 				grid [unit].contents = CellContents.Empty;
 				grid [unit].unit.DestroyUnit ();
+				grid [unit].isAccessible = true;
+				turn.Moving = false;
 			}
 			yield return null;
 		

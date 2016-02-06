@@ -24,7 +24,7 @@ public class ProjectileWeapon : Weapon
 	protected IEnumerator projectile ( Vector3 target) 
 	{
 
-		turnManager.Moving = true;
+		turnManager.Fireing = true;
 		GameObject projectile = Instantiate (Armament, transform.position, transform.rotation) as GameObject;
 		projectile.GetComponent<AudioSource>().Play ();
 		float sqrRemainingDistance = (projectile.transform.position - target).sqrMagnitude; //sqrMagnitude is cheaper on the CPU than Magnitude 
@@ -43,7 +43,7 @@ public class ProjectileWeapon : Weapon
 			yield return null;
 		}
 
-		turnManager.Moving = false;
+		turnManager.Fireing = false;
 		Destroy (projectile);
 
 	}

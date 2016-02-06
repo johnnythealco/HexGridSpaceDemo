@@ -11,11 +11,17 @@ public class BattleHUD : MonoBehaviour
 	public  Slider TargetHealth;
 	public GameManager grid;
 	public Text BattleOverText;
+	public Text Weapon0Text;
+	public Text Weapon1Text;
+
 
 	// Use this for initialization
-	void Start () 
+	void Awake () 
 	{
 		HUD = this;
+		BattleOverText.enabled = false;
+		TargetPanel.SetActive (false);
+
 	
 	}
 	

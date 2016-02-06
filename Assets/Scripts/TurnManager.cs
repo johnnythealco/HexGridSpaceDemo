@@ -8,6 +8,7 @@ public class TurnManager : MonoBehaviour {
 
 	public bool PlayersTurn;
 	public bool Moving{ get; set;}
+	public bool Fireing {get; set;}
 	public static TurnManager turn;
 
 
@@ -37,7 +38,7 @@ public class TurnManager : MonoBehaviour {
 	void Update ()
 	{
 
-		if(!PlayersTurn && !Moving)
+		if(!PlayersTurn && !Moving && !Fireing)
 		{
 			Dictionary<FlatHexPoint, FlatHexPoint> attacks = new Dictionary<FlatHexPoint, FlatHexPoint> ();
 			Dictionary<FlatHexPoint, FlatHexPoint> moves = new Dictionary<FlatHexPoint, FlatHexPoint> ();
@@ -121,9 +122,9 @@ public class TurnManager : MonoBehaviour {
 
 		while(!units.IsEmpty())
 		{
-			if(!Moving)
+			if(!Moving && !Fireing)
 			{
-				BattleManager.Attack (units.First (), attackQueue [units.First ()]);
+				BattleManager.Attack (units.First (), attackQueue [units.First ()], 0);
 
 				units.Remove (units.First ());
 				yield return new WaitForSeconds (0.3f);
@@ -142,7 +143,7 @@ public class TurnManager : MonoBehaviour {
 	
 		while(!units.IsEmpty())
 		{
-				if(!Moving)
+			if(!Moving&& !Fireing)
 				{
 				BattleManager.MoveUnitFromPointToPoint (units.First (), moveQueue [units.First ()]);
 				units.Remove (units.First ());
