@@ -12,11 +12,11 @@ public class Unit : MonoBehaviour {
 	public float MoveSpeed = 100f;
 
 	public float health = 100;
+	public int actionPoints = 2;
 	public GameObject Explosion;
-//	public float damage = 50;
-//	public float attackRange = 1;
 
-	public Weapon weapon1;
+
+
 	public Weapon[] weapons;
 
 
@@ -25,6 +25,7 @@ public class Unit : MonoBehaviour {
 
 	
 	private float inverseMoveTime;
+	public int remainingActionPoints;
 	#endregion
 
 	#region Start & Update

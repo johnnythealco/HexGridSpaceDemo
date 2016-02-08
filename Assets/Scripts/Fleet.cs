@@ -6,6 +6,8 @@ public class Fleet : MonoBehaviour {
 	public GameObject[] ships;
 	public CellContents owner;
 
+
+
 	void Start () {
 	
 	}

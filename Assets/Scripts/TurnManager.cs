@@ -28,79 +28,60 @@ public class TurnManager : MonoBehaviour {
 	}
 
 
-	void Start () {
 
-
-		PlayersTurn = true;
-	}
 	
-	// Update is called once per frame
+
 	void Update ()
 	{
 
 		if(!PlayersTurn && !Moving && !Fireing)
 		{
-			Dictionary<FlatHexPoint, FlatHexPoint> attacks = new Dictionary<FlatHexPoint, FlatHexPoint> ();
-			Dictionary<FlatHexPoint, FlatHexPoint> moves = new Dictionary<FlatHexPoint, FlatHexPoint> ();
-			var enemies = BattleManager.GetEnemyPositions ();
-			foreach(var enemy in enemies)
-			{
-				var validTargets = BattleManager.GetValidTargets (enemy);
-				if (validTargets.Keys.Count > 0)
-				{
-					var target = BattleManager.GetClosestPlayer (enemy);
-					attacks.Add (enemy, target);
-
-					endEnemyMove ();
-				} 
-				else
-				{
-					var player = BattleManager.GetClosestPlayer (enemy);
-					var move = BattleManager.GetMaxMove (enemy, player);
-					moves.Add (enemy, move);
-					endEnemyMove ();
-				}
-			}
-			StartCoroutine (AttackQueue (attacks));
-			StartCoroutine (MoveQueue (moves));
-
-
+			EnemyMoveAndAttack ();
 		}
 	
 	}
 
 	#region Turn and Move Management
-	public void StartPlayerTurn()
+	public void EndUnitAction(Unit unit,int APCost)
 	{
-		
-		remainingPlayerMoves =  BattleManager.GetPlayerPositions ().Count ();
+		BattleManager.CheckIfBattleOver ();
+		unit.remainingActionPoints = unit.remainingActionPoints - APCost;
+
+		if(unit.remainingActionPoints <= 0)
+		{
+			EndPlayerMove ();
+		}
 	}
 
-	public void EndPlayerTurn()
+	public void StartPlayerTurn()
 	{
-		PlayersTurn = false;
+		PlayersTurn = true;
+		remainingPlayerMoves =  BattleManager.GetPlayerPositions ().Count ();
+
+		foreach ( var obj in BattleManager.PlayerFleet.ships)
+		{
+			var unit = obj.GetComponent<Unit> ();
+			unit.remainingActionPoints = unit.actionPoints;
+		}
 	}
+
 
 	public void EndPlayerMove()
 	{
-		BattleManager.CheckIfBattleOver ();
+
 		remainingPlayerMoves = remainingPlayerMoves - 1;
 		if(remainingPlayerMoves <= 0)
 		{
-			EndPlayerTurn ();
 			startEnemyTurn ();
 		}
 	}
 
 	private void startEnemyTurn()
 	{
+		PlayersTurn = false;
 		remainingEnemyMoves = BattleManager.GetEnemyPositions ().Count (); 
 	}
 
-	private void endEnemyTurn()
-	{
-		PlayersTurn = true;
-	}
 
 	private void endEnemyMove()
 	{
@@ -108,11 +89,39 @@ public class TurnManager : MonoBehaviour {
 		remainingEnemyMoves = remainingEnemyMoves - 1;
 		if(remainingEnemyMoves <= 0)
 		{
-			endEnemyTurn ();
 			StartPlayerTurn ();
 		}
 	}
 	#endregion
+
+	void EnemyMoveAndAttack()
+	{
+		Dictionary<FlatHexPoint, FlatHexPoint> attacks = new Dictionary<FlatHexPoint, FlatHexPoint> ();
+		Dictionary<FlatHexPoint, FlatHexPoint> moves = new Dictionary<FlatHexPoint, FlatHexPoint> ();
+		var enemies = BattleManager.GetEnemyPositions ();
+		foreach(var enemy in enemies)
+		{
+			var validTargets = BattleManager.GetValidTargets (enemy);
+			if (validTargets.Keys.Count > 0)
+			{
+				var target = BattleManager.GetClosestPlayer (enemy);
+				attacks.Add (enemy, target);
+
+				endEnemyMove ();
+			} 
+			else
+			{
+				var player = BattleManager.GetClosestPlayer (enemy);
+				var move = BattleManager.GetMaxMove (enemy, player);
+				moves.Add (enemy, move);
+				endEnemyMove ();
+			}
+		}
+		StartCoroutine (AttackQueue (attacks));
+		StartCoroutine (MoveQueue (moves));
+
+
+	}
 
 	protected IEnumerator AttackQueue (Dictionary<FlatHexPoint, FlatHexPoint> attackQueue)
 	{
@@ -151,7 +160,6 @@ public class TurnManager : MonoBehaviour {
 			yield return null;
 		}
 
-		endEnemyTurn ();
 		StartPlayerTurn ();
 	}
 }

@@ -148,18 +148,28 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 					//deselect the Unit
 					else	if(grid[point].unit == unitSelected)
 					{
-						EndAction ();
+						clearSelection ();
+					}
+					//Clear selection and select new unit
+					if (somethingSelected)
+					{
+						clearSelection ();
+						SelectUnitAtPoint (point); 
+						AvailableMoves = GetAvailableMoves (point);
+						HighlightMove (AvailableMoves.Keys);
+						HighlightTargets (GetValidTargets (selectedPoint).Keys.ToList()); 
+
 					}
 				break;
 
 			case CellContents.Empty:
 					//Move the selected unit to an empty cell
-				if (somethingSelected && AvailableMoves.ContainsKey (point))
+					if (somethingSelected && AvailableMoves.ContainsKey (point) && unitSelected.remainingActionPoints > 0)
 				{
 					unitSelected.Face (Map [point]);
 					MoveUnitFromPointToPoint (selectedPoint, point);
-					EndAction ();
-					turn.EndPlayerMove ();
+					turn.EndUnitAction (unitSelected, 1);
+					clearSelection ();
 
 				} 
 					else 	if (!somethingSelected)
@@ -174,8 +184,8 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 				{
 						ShowTargetHud (unitSelected, point);
 						selectedTarget = point;
+						turn.EndUnitAction (unitSelected, 1);
 
-//					EndAction ();
 
 				}
 					else 	if (!somethingSelected)
@@ -323,11 +333,11 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 
 	}
 
-	public void EndAction ()
+	void clearSelection ()
 	{
 		somethingSelected = false;								//Set somethingSelected to false
 		unitSelected = null;									//Set the unitSelected to null
-//		selectedTarget = null;
+
 		UnHighlightJKCells ();
 		AvailableMoves.Clear ();
 		validTargets.Clear ();
@@ -557,10 +567,11 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 				BattleHUD.HUD.TargetPanel.SetActive (false);
 				StartCoroutine (UnitDestruction (destination));
 			}	
-			EndAction ();
+			clearSelection ();
 			turn.EndPlayerMove ();
 		}
 	}
+
 	public void CheckIfBattleOver()
 	{
 		int playerUnits = GetPlayerPositions ().Count ();
@@ -591,6 +602,7 @@ public class GameManager : GridBehaviour<FlatHexPoint>
 				grid [unit].isAccessible = true;
 				turn.Moving = false;
 			}
+			CheckIfBattleOver ();
 			yield return null;
 		
 		}
